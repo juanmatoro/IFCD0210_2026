@@ -14,6 +14,7 @@ Formato pregunta / respuesta corta. Recomendado para repasos rápidos antes del 
 
 **Q3.** ¿Qué propiedad de `process` tiene los argumentos del CLI?
 > `process.argv` (los del usuario empiezan en `[2]`).
+> Ej: `node app.ts hola` → `process.argv = ['/usr/bin/node', '/proyecto/app.ts', 'hola']`.
 
 **Q4.** ¿Cómo cargar un `.env` sin librerías externas?
 > `node --env-file=.env script.ts`.
@@ -42,6 +43,7 @@ Formato pregunta / respuesta corta. Recomendado para repasos rápidos antes del 
 
 **Q11.** ¿Cómo se crea un servidor HTTP nativo?
 > `http.createServer((req, res) => {...}).listen(port)`.
+> Ej: `http.createServer((req,res)=>res.end('OK')).listen(3300)`.
 
 **Q12.** ¿Versión de Express usada en el curso?
 > Express 5.
@@ -70,6 +72,7 @@ Formato pregunta / respuesta corta. Recomendado para repasos rápidos antes del 
 
 **Q19.** ¿Firma de un middleware **de errores**?
 > `(err, req, res, next) => {...}` (cuatro parámetros).
+> Ej: `app.use((err,req,res,next)=>res.status(err.statusCode??500).json({error:err.message}))`.
 
 **Q20.** ¿En qué orden se ejecutan los middleware?
 > En el orden en que se registran con `app.use()` o `app.METHOD()`.
@@ -79,6 +82,7 @@ Formato pregunta / respuesta corta. Recomendado para repasos rápidos antes del 
 
 **Q22.** ¿Para qué sirve `express.json()`?
 > Parsear `application/json` en `req.body`.
+> Ej: `app.use(express.json())` → permite hacer `req.body.title` en un POST.
 
 **Q23.** ¿Para qué sirve `morgan`?
 > Logger de peticiones HTTP.
@@ -98,9 +102,11 @@ Formato pregunta / respuesta corta. Recomendado para repasos rápidos antes del 
 
 **Q27.** ¿Cómo se accede a un parámetro `:id`?
 > `req.params.id`.
+> Ej: ruta `/films/:id` con request a `/films/42` → `req.params.id === '42'`.
 
 **Q28.** ¿Cómo se accede a `?id=5`?
 > `req.query.id`.
+> Ej: `/films?year=2010&genre=sci-fi` → `req.query = { year:'2010', genre:'sci-fi' }`.
 
 **Q29.** ¿Cómo se accede al body parseado?
 > `req.body`.
@@ -110,6 +116,7 @@ Formato pregunta / respuesta corta. Recomendado para repasos rápidos antes del 
 
 **Q31.** ¿Cómo se monta un router en una ruta?
 > `app.use('/api/users', usersRouter)`.
+> Ej: dentro de `usersRouter`, `router.get('/:id', ...)` responde a `GET /api/users/:id`.
 
 **Q32.** ¿Qué representa cada letra del MVC?
 > Model (datos/lógica), View (presentación), Controller (orquesta y valida).
@@ -122,13 +129,24 @@ Formato pregunta / respuesta corta. Recomendado para repasos rápidos antes del 
 ## Bloque 5 — REST
 
 **Q34.** ¿Qué significa REST?
-> Representational State Transfer. **Estilo arquitectónico** (no tecnología).
+> Representational State Transfer. **Estilo arquitectónico** (no tecnología) **basado en recursos** identificados por URIs.
 
-**Q35.** Cinco principios de REST:
+**Q34b.** Cinco elementos esenciales de una API REST:
+> Recursos, URIs, representaciones (típicamente JSON), operaciones (métodos HTTP) e hipermedios (HATEOAS).
+
+**Q34c.** Diferencia entre arquitecturas basadas en mensajes y basadas en recursos:
+> Mensajes (SOAP): el cliente envía un mensaje XML que describe la acción a ejecutar. Recursos (REST): el cliente identifica un recurso por URI y le aplica un método HTTP estándar.
+
+**Q34d.** Diseño orientado a recursos: ¿bien o mal estos endpoints?
+> ❌ `GET /getFilms`, `POST /createFilm` → orientado a acciones (RPC).
+> ✅ `GET /films`, `POST /films` → orientado a recursos (REST).
+
+**Q35.** Seis restricciones de REST (Fielding):
 > Cliente-servidor, stateless, caché, interfaz uniforme, sistema en capas (+ código bajo demanda opcional).
 
 **Q36.** ¿Qué significa "stateless" en REST?
 > El servidor no guarda estado de sesión; cada petición incluye toda la información necesaria.
+> Ej: por eso el JWT se manda en cada request — el servidor no recuerda al usuario entre llamadas.
 
 **Q37.** Operaciones CRUD ↔ métodos HTTP:
 > Create→POST, Read→GET, Update→PUT/PATCH, Delete→DELETE.
@@ -138,12 +156,14 @@ Formato pregunta / respuesta corta. Recomendado para repasos rápidos antes del 
 
 **Q39.** Métodos **no** idempotentes:
 > POST y PATCH.
+> Ej: `POST /films` 3 veces crea 3 films distintos; `PUT /films/42` 3 veces deja el mismo film 42.
 
 **Q40.** Métodos **seguros** (no modifican estado):
 > GET (y técnicamente HEAD, OPTIONS).
 
 **Q41.** Diferencia PUT vs PATCH:
 > PUT reemplaza el recurso completo (idempotente). PATCH actualiza parcialmente (no necesariamente idempotente).
+> Ej: PUT requiere mandar el objeto entero; PATCH solo los campos que cambian.
 
 **Q42.** ¿Qué formato es estándar de facto en REST?
 > JSON.
@@ -209,15 +229,18 @@ Formato pregunta / respuesta corta. Recomendado para repasos rápidos antes del 
 
 **Q60.** ¿Para qué sirve `PRIMARY KEY`?
 > Identificar de forma única cada fila.
+> Ej: `film_id SERIAL PRIMARY KEY`.
 
 **Q61.** ¿Para qué sirve `FOREIGN KEY`?
 > Establecer una relación entre tablas referenciando una PK de otra tabla.
+> Ej: `genre_id INT REFERENCES genres(genre_id) ON DELETE CASCADE`.
 
 **Q62.** Tipos de JOIN:
 > INNER, LEFT, RIGHT, FULL OUTER, CROSS.
 
 **Q63.** ¿LEFT JOIN qué devuelve?
 > Todas las filas de la tabla izquierda + las coincidencias de la derecha.
+> Ej: `SELECT g.name FROM genres g LEFT JOIN films_genres fg ON g.id=fg.genre_id WHERE fg.film_id IS NULL` → géneros sin películas.
 
 **Q64.** ¿UNION vs UNION ALL?
 > UNION quita duplicados; UNION ALL los mantiene.
@@ -227,12 +250,15 @@ Formato pregunta / respuesta corta. Recomendado para repasos rápidos antes del 
 
 **Q66.** ¿Y después de GROUP BY?
 > HAVING.
+> Ej: `GROUP BY year HAVING COUNT(*) > 5` → años con más de 5 películas.
 
 **Q67.** ¿Qué es una vista (VIEW)?
 > Consulta SQL guardada que se comporta como tabla virtual.
+> Ej: `CREATE VIEW top_films AS SELECT * FROM films WHERE rate >= 8`.
 
 **Q68.** ¿Qué es un trigger?
 > Procedimiento que se ejecuta automáticamente antes/después de un INSERT/UPDATE/DELETE.
+> Ej: `CREATE TRIGGER films_updated BEFORE UPDATE ON films FOR EACH ROW EXECUTE FUNCTION set_updated_at()`.
 
 **Q69.** Lenguaje procedural de Postgres:
 > PL/pgSQL.
@@ -264,9 +290,11 @@ Formato pregunta / respuesta corta. Recomendado para repasos rápidos antes del 
 
 **Q77.** Sintaxis de placeholders en `pg`:
 > `$1, $2, $3...` (no concatenar nunca strings).
+> Ej: `client.query('SELECT * FROM films WHERE id = $1', [id])`.
 
 **Q78.** ¿Para qué se usan los placeholders?
 > Para evitar **SQL Injection**.
+> Ej: `WHERE id = ${id}` ❌ permite que `id = "1; DROP TABLE films; --"` borre tu BD.
 
 **Q79.** ¿Qué método ejecuta una query con `pg`?
 > `client.query(sql, paramsArray)`.
@@ -295,9 +323,11 @@ Formato pregunta / respuesta corta. Recomendado para repasos rápidos antes del 
 
 **Q86.** ¿Qué hace `prisma db push`?
 > Sincroniza el schema con la BD **sin** generar archivos de migración.
+> Ej: rápido para prototipar, pero pierdes el historial.
 
 **Q87.** ¿Qué hace `prisma migrate dev`?
 > Crea una nueva migración (archivo SQL versionado), la aplica y regenera el cliente. Para entornos de desarrollo.
+> Ej: `npx prisma migrate dev --name add_reviews_table`.
 
 **Q88.** ¿Qué hace `prisma migrate deploy`?
 > Aplica las migraciones existentes en producción/CI (no crea nuevas).
@@ -322,21 +352,26 @@ Formato pregunta / respuesta corta. Recomendado para repasos rápidos antes del 
 
 **Q95.** ¿Cómo se define una relación 1:n en Prisma?
 > Campo escalar FK + `@relation(fields, references)` en el lado N; lista del modelo en el lado 1.
+> Ej: `User { reviews Review[] }` y `Review { user User @relation(fields:[userID], references:[id])  userID Int }`.
 
 **Q96.** Diferencia `findUnique` vs `findFirst`:
 > `findUnique` requiere filtro por campo único; `findFirst` admite cualquier filtro y devuelve el primero.
+> Ej: `findUnique({ where: { email: 'a@b.c' } })` (email es @unique) vs `findFirst({ where: { year: 2010 } })`.
 
 **Q97.** Diferencia `include` vs `select`:
 > `include` añade relaciones; `select` elige los campos a devolver. **Son excluyentes** en la misma consulta.
+> Ej: `findMany({ include: { profile: true } })` vs `findMany({ select: { id: true, email: true } })`.
 
 **Q98.** Método para "actualizar si existe, crear si no":
 > `upsert`.
+> Ej: `prisma.user.upsert({ where:{email}, update:{...}, create:{...} })`.
 
 **Q99.** ¿Cómo ejecutar SQL crudo con Prisma?
 > `prisma.$queryRaw\`SELECT ...\`` o `prisma.$executeRaw`.
 
 **Q100.** ¿Cómo agrupar varias operaciones en una transacción?
 > `prisma.$transaction([op1, op2, ...])`.
+> Ej: `await prisma.$transaction([prisma.film.create({...}), prisma.review.create({...})])`.
 
 **Q101.** ¿Para qué sirve `prisma db seed`?
 > Ejecutar el script de datos iniciales configurado en `prisma.config.ts`.
@@ -359,18 +394,22 @@ Formato pregunta / respuesta corta. Recomendado para repasos rápidos antes del 
 
 **Q106.** Diferencia `parse` vs `safeParse`:
 > `parse` lanza `ZodError` si falla; `safeParse` devuelve `{ success, data }` o `{ success, error }`.
+> Ej: `const r = Schema.safeParse(req.body); if (!r.success) return next(new HttpError(422,...))`.
 
 **Q107.** ¿Cómo inferir el tipo TS de un schema?
 > `type T = z.infer<typeof MiSchema>`.
+> Ej: si `UserSchema = z.object({ email: z.string() })` → `type User = { email: string }`.
 
 **Q108.** Validador de email:
 > `z.string().email()`.
 
 **Q109.** Campo opcional (acepta undefined):
 > `.optional()`.
+> Ej: `age: z.number().optional()` → `age` puede ser `number | undefined`.
 
 **Q110.** Campo nullable (acepta null):
 > `.nullable()`.
+> Ej: `avatar: z.string().nullable()` → puede ser `string | null` (pero NO undefined).
 
 **Q111.** Tres usos de Zod en el curso:
 > Validar variables de entorno, DTOs en endpoints, params/query/body en rutas.
@@ -393,21 +432,25 @@ Formato pregunta / respuesta corta. Recomendado para repasos rápidos antes del 
 
 **Q116.** Métodos clave de bcrypt:
 > `hash(password, saltRounds)` y `compare(password, hash)`.
+> Ej: `const h = await hash('pwd', 12); const ok = await compare('pwd', h)`.
 
 **Q117.** ¿Qué es un JWT?
 > JSON Web Token: token autocontenido formado por header.payload.signature.
+> Ej: `eyJhbGci...HEADER.eyJpZCI6...PAYLOAD.abc123SIGNATURE`.
 
 **Q118.** ¿Las tres partes de un JWT?
 > Header (algoritmo y tipo) + Payload (claims) + Signature (firma).
 
 **Q119.** ¿El payload de un JWT está cifrado?
 > No, solo codificado en base64url. Por eso **nunca** se mete información sensible (passwords).
+> Ej: pega un JWT en jwt.io y verás el payload en claro.
 
 **Q120.** ¿Qué algoritmo de firma usa por defecto la librería `jsonwebtoken` con secret simétrico?
 > HS256 (HMAC-SHA256).
 
 **Q121.** Métodos clave de `jsonwebtoken`:
 > `jwt.sign(payload, secret, options)` y `jwt.verify(token, secret)`.
+> Ej: `jwt.sign({ id, role }, env.JWT_SECRET, { expiresIn: '1h' })`.
 
 **Q122.** ¿Cómo se envía el JWT en la petición?
 > Cabecera `Authorization: Bearer <token>`.
@@ -420,12 +463,14 @@ Formato pregunta / respuesta corta. Recomendado para repasos rápidos antes del 
 
 **Q125.** ¿Qué es RBAC?
 > Role-Based Access Control: permisos organizados por roles.
+> Ej: roles `USER`, `EDITOR`, `ADMIN`; el endpoint declara qué roles permite.
 
 **Q126.** Roles definidos en `15.Films`:
 > `USER`, `EDITOR`, `ADMIN`.
 
 **Q127.** ¿Qué hace el `isOwnerOrAdmin`?
 > Permite continuar si `req.user.id === Number(req.params.id)` o el rol es `ADMIN`; si no, 403.
+> Ej: `PATCH /users/5` solo lo aprueba si el JWT identifica al usuario id=5 o si es ADMIN.
 
 **Q128.** ¿Qué cabecera **debería** desactivarse por seguridad en Express?
 > `X-Powered-By` con `app.disable('x-powered-by')`.
@@ -513,9 +558,17 @@ Formato pregunta / respuesta corta. Recomendado para repasos rápidos antes del 
 
 **Q152.** ¿Qué son los **hipermedios** en una API REST?
 > Enlaces dentro de las respuestas para navegar a recursos relacionados (HATEOAS).
+> Ej: una respuesta de `/films/42` incluye `"links": { "reviews": "/films/42/reviews" }`.
 
-**Q153.** ¿Cuatro elementos esenciales de una API REST?
-> Recursos, URIs, representaciones, operaciones (+ hipermedios como ideal).
+**Q153.** ¿Cinco elementos esenciales de una API REST?
+> Recursos, URIs, representaciones (JSON), operaciones (métodos HTTP) e hipermedios.
+
+**Q154.** Diferencia clave entre arquitectura basada en mensajes vs basada en recursos:
+> Mensajes (SOAP): el cliente describe la **acción** en un mensaje XML. Recursos (REST): el cliente identifica un **recurso** por URI y aplica un método HTTP estándar.
+
+**Q155.** ¿En REST las URIs deben contener verbos?
+> No. Los verbos los aporta el método HTTP. Las URIs identifican **recursos** (nombres en plural).
+> Ej: ❌ `/getFilms` → ✅ `GET /films`.
 
 ---
 
