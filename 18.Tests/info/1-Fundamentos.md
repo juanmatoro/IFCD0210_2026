@@ -145,6 +145,7 @@ El coverage o cobertura de código es una métrica que nos indica el porcentaje 
 El coverage se mide en porcentaje y se calcula dividiendo el número de líneas de código que han sido ejecutadas por los test entre el número total de líneas de código del programa. Un coverage del 100% significa que todas las líneas de código han sido ejecutadas por los test.
 
 El coverage es una métrica muy útil para evaluar la calidad de los test y para identificar las partes del código que no están cubiertas por los test. Sin embargo, aunque puede entenderse como condición necesaria, un coverage del 100% no es suficiente para garantizar la calidad del software porque puede haber casos de uso que no se hayan contemplado.
+Coveraje se instala la primera vez que lo ejecutas
 
 ### Stubs: Mocks y Spies
 
