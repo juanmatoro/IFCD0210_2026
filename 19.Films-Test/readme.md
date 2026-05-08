@@ -15,6 +15,44 @@ Ejemplo de API de películas, géneros, reviews y usuarios (profile)
 - Ejecutar migraciones para crear la base de datos con `npx prisma migrate dev`
 - Iniciar el servidor con `npm start` o `npm run dev` para modo desarrollo.
 
+Vitest:
+
+```shell
+ npm i -D vitest @vitest/coverage-v8
+```
+
+- Script para ejecutar tests:
+
+```json
+"scripts": {
+ "test": "vitest",
+ "test:C": "vitest run --coverage"
+}
+```
+
+- agregar un archivo de configuración para Vitest, `vitest.config.ts`:
+
+```typescript
+import { defineConfig } from 'vitest/config';
+
+export default defineConfig({
+  test: {
+    globals: true,
+  },
+});
+```
+
+- Agregar globals en tsconfig.json:
+
+```json
+{
+  "compilerOptions": {
+    // ... otras opciones ...
+    "types": [..., "vitest/globals"]
+  }
+}
+```
+
 ## Estructura del proyecto
 
 ## Relación entre las tablas
