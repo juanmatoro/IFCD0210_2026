@@ -1648,18 +1648,20 @@ Challenge
 
 ### Día 4 (J 14/05/2026) - M3.00 07 - Tests Frontend: Componentes (1)
 
-<!--
+- Review supertest
+- Test unitario del frontend (2)
+  - Tests de un servicio
+    - Completando entidades
+    - Completando films repo: fetch mock
+    - Casos ok: true y ok: false
 
-- Test unitario del frontend (1)
-    - Tests de un servicio
-      - Completando entidades
-      - Completando films repo
-    - Configuración de jsdom y testing-library
-      - Caja negra (comportamiento) v. caja blanca (implementación)
-      - Tests de un componente
-      - Aspectos estáticos
+[descanso]
 
--->
+- Test unitario de componentes (1)
+  - Configuración de jsdom y testing-library
+    - Caja negra (comportamiento) v. caja blanca (implementación)
+    - Tests de un componente
+    - Aspectos estáticos o visual
 
 ### Día 5 (V 15/05/2026) - Fiesta
 
@@ -1667,43 +1669,54 @@ Challenge
 
 ### Día 1 (L 18/05/2026) - M3.00 08 - Tests Frontend: Componentes (2)
 
-<!-- - Test unitario del frontend (2)
-
+- Test unitario del frontend (2)
   - Tests de un componente (continuación)
-    - Interacciones: Evento click
-    - Mocking de timers
-    - Nuevos componentes header / addForm
-    - Test de formularios
+    - Revisar clase anterior
+      - Ciclo de vida de los componentes
+      - Refactorización y renombrados
+      - Test de web components con Vitest
+    - Mejorar configuración: matchers de testing-library
 
--->
+[descanso]
 
-### Día 2 (M 19/05/2026) - M3.00 09 - E2E
+- Tests de un componente (continuación)
+  - Interacciones: Evento click
+    - Componente counter
+      - click()
+      - fireEvent
+      - userEvent
+  - Páginas
 
-<!-- 
+### Día 2 (M 19/05/2026) - M3.00 09 - Tests Frontend: Componentes (3)
 
-- Comentarios de documentación
+- Test unitario del frontend (3)
+  - Review: Test Páginas
+  - Comunicación entre componentes
+    - Register: usando Codex
+    - Eventos
+
+[descanso]
+
+- Test unitario del frontend (continuación)
+  - Test de formularios
+
+### Día 3 (X 20/05/2026) - M3.00 10 - E2E - Documentación: JsDoc / Swagger
+
+<!--
+
 - Entornos: desarrollo y producción (y testing)
+  - Procesos de construcción y despliegue
 - Test e2e del frontend
   - Herramientas: Cypress, Playwright...
   - Playwright. Instalación y configuración
   - Ejemplos de uso
-
 -->
-
-### Día 3 (X 20/05/2026) - M3.00 10 - Documentación: JsDoc / Swagger
 
 <!--
 
 - Tipos en los comentarios de documentación
 - Generación de documentación a partir de los comentarios: Swagger
 - Uso de la documentación generada
-
--->
-
-<!--
-
-- Entornos: desarrollo y producción (y testing)
-- Procesos de construcción y despliegue
 
 -->
 

@@ -31,6 +31,7 @@
   - explicit imports with `.ts` omitted. 
 - Keep page files named `*-page.ts`, and use the current component split:
   - `*.ts` for custom elements and paired `.css` files for component styles.
+- In component CSS files, prefer nesting under the component root class (e.g. `.register { & h2 { ... } }`) instead of repeating the root selector on every rule.
 - Use native Custom Elements without Shadow DOM; render component HTML with template strings and `innerHTML`.
 - When registering custom elements, check `customElements.get(...)` before calling `customElements.define(...)`.
 
@@ -44,7 +45,6 @@
 ## Implementation Notes
 
 - The router is intentionally basic: it handles the main pages, uses the History API, and does not support nested routes or advanced `query`/`hash` handling.
-- The menu implementation is intentionally educational; a production-ready version should manage listeners through `connectedCallback`/`disconnectedCallback`.
 - Global styling is centralized in `base.css` and `index.css`; component-specific styles should be imported from the component file.
 
 ## Commit & Pull Request Guidelines
