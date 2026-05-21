@@ -1702,15 +1702,21 @@ Challenge
 
 ### Día 3 (X 20/05/2026) - M3.00 10 - E2E - Documentación: JsDoc / Swagger
 
-<!--
+- Comunicación enter componentes: features/ToDo
 
-- Entornos: desarrollo y producción (y testing)
-  - Procesos de construcción y despliegue
 - Test e2e del frontend
   - Herramientas: Cypress, Playwright...
   - Playwright. Instalación y configuración
+
+[descanso]
+
+- Test e2e del frontend: Playwright
+  - Configuración
   - Ejemplos de uso
--->
+  - Uso con APIS
+  - Accesibilidad
+- Entornos: desarrollo y producción (y testing)
+  - Procesos de construcción y despliegue
 
 <!--
 
