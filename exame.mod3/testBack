@@ -1,0 +1,256 @@
+import { describe, it, expect, beforeEach, vi } from 'vitest';
+import type { Request, Response, NextFunction } from 'express';
+import type { Product } from '@prisma/client';
+
+import { ProductsController } from './products.controller';
+import type { ProductRepo } from '../repo/products.repository.js';
+
+describe('ProductsController', () => {
+    let mockRepo: ProductRepo;
+    let controller: ProductsController;
+    let req: Partial<Request>;
+    let res: Partial<Response>;
+    let next: NextFunction;
+
+    const mockProduct = {
+        id: '1',
+        name: 'Test Product',
+        description: 'A test product',
+        category: 'mobile',
+        price: 100,
+        hasPromo: false,
+    } as unknown as Product;
+
+    const mockProducts = [mockProduct] as Product[];
+
+    beforeEach(() => {
+        mockRepo = {
+            read: vi.fn(),
+            readById: vi.fn(),
+            create: vi.fn(),
+            update: vi.fn(),
+            delete: vi.fn(),
+        } as unknown as ProductRepo;
+
+        controller = new ProductsController(mockRepo);
+
+        req = { params: {}, body: {} };
+        res = {
+            json: vi.fn(),
+            status: vi.fn().mockReturnThis(),
+        };
+        next = vi.fn();
+    });
+
+    describe('Instance', () => {
+        it('should be an instance of ProductsController', () => {
+            expect(controller).toBeInstanceOf(ProductsController);
+        });
+    });
+
+    describe('getAll', () => {
+        it('should call repo.read and return a response with all products', async () => {
+            (mockRepo.read as ReturnType<typeof vi.fn>).mockResolvedValue(
+                mockProducts,
+            );
+
+            await controller.getAll(
+                req as Request,
+                res as Response,
+                next as NextFunction,
+            );
+
+            expect(mockRepo.read).toHaveBeenCalledTimes(1);
+            expect(res.json).toHaveBeenCalledWith({
+                results: mockProducts,
+                error: '',
+            });
+            expect(next).not.toHaveBeenCalled();
+        });
+
+        it('should call next with an error when repo.read throws', async () => {
+            const error = new Error('DB error');
+            (mockRepo.read as ReturnType<typeof vi.fn>).mockRejectedValue(error);
+
+            await controller.getAll(
+                req as Request,
+                res as Response,
+                next as NextFunction,
+            );
+
+            expect(next).toHaveBeenCalledWith(error);
+            expect(res.json).not.toHaveBeenCalled();
+        });
+    });
+
+    describe('getById', () => {
+        it('should call repo.readById with the id from params and return the product', async () => {
+            req.params = { id: '1' };
+            (mockRepo.readById as ReturnType<typeof vi.fn>).mockResolvedValue(
+                mockProduct,
+            );
+
+            await controller.getById(
+                req as Request,
+                res as Response,
+                next as NextFunction,
+            );
+
+            expect(mockRepo.readById).toHaveBeenCalledWith('1');
+            expect(res.json).toHaveBeenCalledWith({
+                results: [mockProduct],
+                error: '',
+            });
+            expect(next).not.toHaveBeenCalled();
+        });
+
+        it('should call next with an error when repo.readById throws', async () => {
+            req.params = { id: '99' };
+            const error = new Error('Product not found');
+            (mockRepo.readById as ReturnType<typeof vi.fn>).mockRejectedValue(
+                error,
+            );
+
+            await controller.getById(
+                req as Request,
+                res as Response,
+                next as NextFunction,
+            );
+
+            expect(next).toHaveBeenCalledWith(error);
+            expect(res.json).not.toHaveBeenCalled();
+        });
+    });
+
+    describe('create', () => {
+        const newData = {
+            name: 'New Product',
+            description: 'New description',
+            category: 'mobile',
+            price: 200,
+            hasPromo: true,
+        };
+
+        it('should call repo.create with body data, set status 201 and return the new product', async () => {
+            req.body = newData;
+            (mockRepo.create as ReturnType<typeof vi.fn>).mockResolvedValue(
+                mockProduct,
+            );
+
+            await controller.create(
+                req as Request,
+                res as Response,
+                next as NextFunction,
+            );
+
+            expect(mockRepo.create).toHaveBeenCalledWith(newData);
+            expect(res.status).toHaveBeenCalledWith(201);
+            expect(res.json).toHaveBeenCalledWith({
+                results: [mockProduct],
+                error: '',
+            });
+            expect(next).not.toHaveBeenCalled();
+        });
+
+        it('should call next with an error when repo.create throws', async () => {
+            req.body = newData;
+            const error = new Error('Invalid data');
+            (mockRepo.create as ReturnType<typeof vi.fn>).mockRejectedValue(
+                error,
+            );
+
+            await controller.create(
+                req as Request,
+                res as Response,
+                next as NextFunction,
+            );
+
+            expect(next).toHaveBeenCalledWith(error);
+            expect(res.json).not.toHaveBeenCalled();
+            expect(res.status).not.toHaveBeenCalled();
+        });
+    });
+
+    describe('update', () => {
+        const updateData = { name: 'Updated Product', price: 300 };
+
+        it('should call repo.update with id and body, and return the updated product', async () => {
+            req.params = { id: '1' };
+            req.body = updateData;
+            const updatedProduct = { ...mockProduct, ...updateData };
+            (mockRepo.update as ReturnType<typeof vi.fn>).mockResolvedValue(
+                updatedProduct,
+            );
+
+            await controller.update(
+                req as Request,
+                res as Response,
+                next as NextFunction,
+            );
+
+            expect(mockRepo.update).toHaveBeenCalledWith('1', updateData);
+            expect(res.json).toHaveBeenCalledWith({
+                results: [updatedProduct],
+                error: '',
+            });
+            expect(next).not.toHaveBeenCalled();
+        });
+
+        it('should call next with an error when repo.update throws', async () => {
+            req.params = { id: '99' };
+            req.body = updateData;
+            const error = new Error('Product not found');
+            (mockRepo.update as ReturnType<typeof vi.fn>).mockRejectedValue(
+                error,
+            );
+
+            await controller.update(
+                req as Request,
+                res as Response,
+                next as NextFunction,
+            );
+
+            expect(next).toHaveBeenCalledWith(error);
+            expect(res.json).not.toHaveBeenCalled();
+        });
+    });
+
+    describe('delete', () => {
+        it('should call repo.delete with the id and return the deleted product', async () => {
+            req.params = { id: '1' };
+            (mockRepo.delete as ReturnType<typeof vi.fn>).mockResolvedValue(
+                mockProduct,
+            );
+
+            await controller.delete(
+                req as Request,
+                res as Response,
+                next as NextFunction,
+            );
+
+            expect(mockRepo.delete).toHaveBeenCalledWith('1');
+            expect(res.json).toHaveBeenCalledWith({
+                results: [mockProduct],
+                error: '',
+            });
+            expect(next).not.toHaveBeenCalled();
+        });
+
+        it('should call next with an error when repo.delete throws', async () => {
+            req.params = { id: '99' };
+            const error = new Error('Product not found');
+            (mockRepo.delete as ReturnType<typeof vi.fn>).mockRejectedValue(
+                error,
+            );
+
+            await controller.delete(
+                req as Request,
+                res as Response,
+                next as NextFunction,
+            );
+
+            expect(next).toHaveBeenCalledWith(error);
+            expect(res.json).not.toHaveBeenCalled();
+        });
+    });
+});
