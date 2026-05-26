@@ -1,0 +1,79 @@
+import { describe, it, expect, beforeEach } from 'vitest';
+import { screen } from '@testing-library/dom';
+import '@testing-library/jest-dom/vitest';
+
+import { createHeader } from './header';
+
+describe('createHeader', () => {
+    beforeEach(() => {
+        document.body.innerHTML = '';
+    });
+
+    describe('Default behavior', () => {
+        let element: HTMLElement;
+
+        beforeEach(() => {
+            element = createHeader();
+        });
+
+        it('should render an element in the document', () => {
+            expect(element).toBeInTheDocument();
+        });
+
+        it('should render a <header> element with class "header"', () => {
+            expect(element.tagName).toBe('HEADER');
+            expect(element).toHaveClass('header');
+        });
+
+        it('should render the company logo with proper alt text', () => {
+            const logo = screen.getByAltText('Logo de la empresa');
+            expect(logo).toBeInTheDocument();
+            expect(logo).toHaveAttribute('src', 'favicon.png');
+            expect(logo).toHaveClass('header__logo');
+        });
+
+        it('should render a h1 with the title "Productos"', () => {
+            const title = screen.getByRole('heading', { level: 1 });
+            expect(title).toBeInTheDocument();
+            expect(title).toHaveTextContent('Productos');
+            expect(title).toHaveClass('header__title');
+        });
+
+        it('should render an "Add" button with proper aria attributes', () => {
+            const button = screen.getByRole('button', { name: /add/i });
+            expect(button).toBeInTheDocument();
+            expect(button).toHaveAttribute('type', 'button');
+            expect(button).toHaveAttribute('aria-expanded', 'false');
+            expect(button).toHaveAttribute('aria-controls', 'add');
+            expect(button).toHaveClass('header__nav-button');
+        });
+
+        it('should render a <details> element with class "add" in the document', () => {
+            const details = document.querySelector('details.add');
+            expect(details).toBeInTheDocument();
+        });
+
+        it('should render a <summary> inside details with text "Add"', () => {
+            const summary = document.querySelector('details.add summary');
+            expect(summary).toBeInTheDocument();
+            expect(summary).toHaveTextContent('Add');
+            expect(summary).toHaveClass('header__nav-title');
+        });
+    });
+
+    describe('Custom selector and position', () => {
+        it('should render inside a custom selector', () => {
+            document.body.innerHTML = '<div id="custom"></div>';
+            const element = createHeader('#custom', 'afterbegin');
+
+            const container = document.getElementById('custom');
+            expect(container?.firstElementChild).toBe(element);
+        });
+
+        it('should throw an error if the selector does not exist', () => {
+            expect(() =>
+                createHeader('#non-existent-selector', 'afterbegin'),
+            ).toThrow();
+        });
+    });
+});
